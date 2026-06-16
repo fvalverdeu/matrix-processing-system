@@ -1,0 +1,20 @@
+services:
+  qr-service-go:
+    build:
+      context: ./qr-service-go
+    ports:
+      - "${QR_SERVICE_PORT:-8080}:8080"
+    environment:
+      PORT: "8080"
+      STATISTICS_SERVICE_URL: "http://statistics-service-node:3000"
+      STATISTICS_TIMEOUT_MS: "${STATISTICS_TIMEOUT_MS:-5000}"
+    depends_on:
+      - statistics-service-node
+
+  statistics-service-node:
+    build:
+      context: ./statistics-service-node
+    ports:
+      - "${STATISTICS_SERVICE_PORT:-3000}:3000"
+    environment:
+      PORT: "3000"
