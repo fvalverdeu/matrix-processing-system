@@ -1,0 +1,28 @@
+{
+  "folders": [
+    { "path": "."},
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/node_modules": true,
+      "**/dist": true
+    },
+    "search.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/node_modules": true,
+      "**/dist": true
+    },
+    "files.watcherExclude": {
+      "**/bin/**": true,
+      "**/obj/**": true,
+      "**/node_modules/**": true,
+      "**/dist/**": true
+    },
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "typescript.preferences.importModuleSpecifier": "relative",
+  }
+}
