@@ -1,8 +1,9 @@
 package models
 
 type QRResponse struct {
-	Q [][]float64 `json:"q"`
-	R [][]float64 `json:"r"`
+	Q          [][]float64 `json:"q"`
+	R          [][]float64 `json:"r"`
+	Statistics Statistics  `json:"statistics"`
 }
 
 type APIError struct {

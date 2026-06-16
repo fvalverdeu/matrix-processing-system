@@ -2,17 +2,45 @@ package services
 
 import (
 	"gonum.org/v1/gonum/mat"
+
+	"qr-service-go/internal/models"
 )
 
+type StatisticsClient interface {
+	CalculateStatistics(q, r [][]float64) (models.Statistics, error)
+}
+
 type QRService struct {
-	validator *MatrixValidator
+	validator        *MatrixValidator
+	statisticsClient StatisticsClient
 }
 
-func NewQRService(validator *MatrixValidator) *QRService {
-	return &QRService{validator: validator}
+func NewQRService(validator *MatrixValidator, statisticsClient StatisticsClient) *QRService {
+	return &QRService{
+		validator:        validator,
+		statisticsClient: statisticsClient,
+	}
 }
 
-func (s *QRService) Decompose(matrix [][]float64) ([][]float64, [][]float64, error) {
+func (s *QRService) Process(matrix [][]float64) (models.QRResponse, error) {
+	q, r, err := s.decompose(matrix)
+	if err != nil {
+		return models.QRResponse{}, err
+	}
+
+	statistics, err := s.statisticsClient.CalculateStatistics(q, r)
+	if err != nil {
+		return models.QRResponse{}, err
+	}
+
+	return models.QRResponse{
+		Q:          q,
+		R:          r,
+		Statistics: statistics,
+	}, nil
+}
+
+func (s *QRService) decompose(matrix [][]float64) ([][]float64, [][]float64, error) {
 	if err := s.validator.Validate(matrix); err != nil {
 		return nil, nil, err
 	}

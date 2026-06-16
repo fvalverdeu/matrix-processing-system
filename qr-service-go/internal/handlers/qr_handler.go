@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"qr-service-go/internal/clients"
 	"qr-service-go/internal/models"
 	"qr-service-go/internal/services"
 )
@@ -28,7 +29,7 @@ func (h *QRHandler) Decompose(c *fiber.Ctx) error {
 		})
 	}
 
-	q, r, err := h.qrService.Decompose(req.Matrix)
+	response, err := h.qrService.Process(req.Matrix)
 	if err != nil {
 		var validationErr *services.ValidationError
 		if errors.As(err, &validationErr) {
@@ -36,6 +37,16 @@ func (h *QRHandler) Decompose(c *fiber.Ctx) error {
 				Error: models.APIError{
 					Code:    "INVALID_MATRIX",
 					Message: validationErr.Message,
+				},
+			})
+		}
+
+		var unavailableErr *clients.UnavailableError
+		if errors.As(err, &unavailableErr) {
+			return c.Status(fiber.StatusBadGateway).JSON(models.ErrorResponse{
+				Error: models.APIError{
+					Code:    "STATISTICS_UNAVAILABLE",
+					Message: unavailableErr.Message,
 				},
 			})
 		}
@@ -48,8 +59,5 @@ func (h *QRHandler) Decompose(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(models.QRResponse{
-		Q: q,
-		R: r,
-	})
+	return c.JSON(response)
 }
